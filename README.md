@@ -1,3 +1,5 @@
+![Upload to PyPi](https://github.com/Toth-Technology/collageradiomics/workflows/Upload%20to%20PyPi/badge.svg)
+
 # Co-occurrence of Local Anisotropic Gradient Orientations (CoLlAGe)
 
 # Table of Contents

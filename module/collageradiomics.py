@@ -168,7 +168,7 @@ class Collage:
         :type cooccurence_angles: list, optional
         :param difference_variance_interpretation: Feature 10 has two interpretations, as the variance of |x-y| or as the variance of P(|x-y|).].Defaults to DifferenceVarianceInterpretation.XMinusYVariance.
         :type difference_variance_interpretation: DifferenceVarianceInterpretation, optional
-        :param haralick_window_size: size of rolling window for texture calculations. Defaults to -1.
+        :param haralick_window_size: size of rolling window for texture calculations. Defaults to -1, which means it's calculated from the svd_radius
         :type haralick_window_size: int, optional
         :param num_unique_angles: number of bins to use for the texture calculation. Defaults to 64.
         :type num_unique_angles: int, optional
@@ -176,7 +176,7 @@ class Collage:
 
 
     @property
-    def img_array(self):
+    def image_array(self):
         """
         The original image.
 
@@ -184,7 +184,7 @@ class Collage:
         :setter: Sets the original image array.
         :type: np.ndarray
         """
-        return self._img_array
+        return self._image_array
 
     @property
     def mask_array(self):
@@ -307,7 +307,7 @@ class Collage:
 
 
     def __init__(self,
-                 img_array,
+                 image_array,
                  mask_array,
                  svd_radius=5,
                  verbose_logging=False,
@@ -354,23 +354,23 @@ class Collage:
         if num_unique_angles < 1:
             raise Exception('num_unique_angles must contain at least 1 bin')
 
-        if img_array.ndim < 2 or img_array.ndim > 3:
+        if image_array.ndim < 2 or image_array.ndim > 3:
             raise Exception('Expected a 2D or 3D image.')
 
-        if mask_array.shape != img_array.shape:
+        if mask_array.shape != image_array.shape:
             raise Exception('Mask must be the same shape as image.')
 
-        self._is_3D = img_array.ndim == 3
+        self._is_3D = image_array.ndim == 3
         if verbose_logging:
             print(f'Running 3D Collage = {self.is_3D}')
 
-        self._img_array = img_array
+        self._image_array = image_array
         if not self.is_3D:
             # in the case of a single 2D slice, give it a third dimension of unit length
-            self._img_array = self._img_array.reshape(self._img_array.shape + (1,))
+            self._image_array = self._image_array.reshape(self._image_array.shape + (1,))
 
         min_3D_slices = 3;
-        if self._img_array.shape[0] <  self._haralick_window_size or self._img_array.shape[1] < self._haralick_window_size or (self._is_3D and self._img_array.shape[2] < min_3D_slices):
+        if self._image_array.shape[0] <  self._haralick_window_size or self._image_array.shape[1] < self._haralick_window_size or (self._is_3D and self._image_array.shape[2] < min_3D_slices):
             raise Exception(
                 f'Image is too small for a window size of {self._haralick_window_size} pixels.')
 
@@ -382,7 +382,7 @@ class Collage:
         thresholded_mask_array = (mask_array != 0)
 
         # make correct shape
-        thresholded_mask_array = thresholded_mask_array.reshape(self.img_array.shape)
+        thresholded_mask_array = thresholded_mask_array.reshape(self.image_array.shape)
 
         # extract rectangular area of mask
         non_zero_indices = np.argwhere(thresholded_mask_array)
@@ -411,7 +411,7 @@ class Collage:
         self._num_unique_angles = num_unique_angles
 
 
-    def calculate_haralick_feature_values(self, img_array, center_x, center_y):
+    def calculate_haralick_feature_values(self, image_array, center_x, center_y):
 
         """Gets the haralick texture feature values at the x, y, z coordinate.
 , pos[1]
@@ -421,12 +421,6 @@ class Collage:
             :type center_x: int
             :param center_y: y center of coordinate
             :type center_y: int
-            :param window_size: size of window to pull for calculation
-            :type window_size: int
-            :param num_unique_angles: number of bins
-            :type num_unique_angles: int
-            :param haralick_feature: desired haralick feature
-            :type haralick_feature: HaralickFeature
 
             :returns: A 13x1 vector of haralick texture at the coordinate.
             :rtype: numpy.ndarray
@@ -435,12 +429,12 @@ class Collage:
         window_size = self.haralick_window_size
         min_x = int(max(0, center_x - window_size / 2 - 1))
         min_y = int(max(0, center_y - window_size / 2 - 1))
-        max_x = int(min(img_array.shape[1] - 1, center_x + window_size / 2 + 1))
-        max_y = int(min(img_array.shape[0] - 1, center_y + window_size / 2 + 1))
-        cropped_img_array = img_array[min_y:max_y, min_x:max_x]
+        max_x = int(min(image_array.shape[1] - 1, center_x + window_size / 2 + 1))
+        max_y = int(min(image_array.shape[0] - 1, center_y + window_size / 2 + 1))
+        cropped_image_array = image_array[min_y:max_y, min_x:max_x]
 
         # co-occurence matrix of all 8 directions and sum them
-        cooccurence_matrix = greycomatrix(cropped_img_array, [1], self.cooccurence_angles, levels=self.num_unique_angles)
+        cooccurence_matrix = greycomatrix(cropped_image_array, [1], self.cooccurence_angles, levels=self.num_unique_angles)
         cooccurence_matrix = np.sum(cooccurence_matrix, axis=3)
         cooccurence_matrix = cooccurence_matrix[:, :, 0]
 
@@ -497,6 +491,8 @@ class Collage:
     def execute(self):
         """Begins haralick calculation.
 
+            The output will contain numpy.nan everywhere except the mask.
+
             :returns: An image at original size that only has the masked section filled in with collage calculations.
             :rtype: numpy.ndarray
         """
@@ -515,15 +511,15 @@ class Collage:
         mask_height = mask_max_y - mask_min_y
         mask_depth  = mask_max_z - mask_min_z
 
-        img_array = self.img_array
+        image_array = self.image_array
 
         # extend the mask outwards a bit (up to the edge of the image) to handle the svd radius
         cropped_min_x = max(mask_min_x - svd_radius, 0)
         cropped_min_y = max(mask_min_y - svd_radius, 0)
         cropped_min_z = max(mask_min_z - 1         , 0) # for 3D, we just extend 1 slice in both directions
-        cropped_max_x = min(mask_max_x + svd_radius, img_array.shape[1])
-        cropped_max_y = min(mask_max_y + svd_radius, img_array.shape[0])
-        cropped_max_z = min(mask_max_z + 1         , img_array.shape[2])
+        cropped_max_x = min(mask_max_x + svd_radius, image_array.shape[1])
+        cropped_max_y = min(mask_max_y + svd_radius, image_array.shape[0])
+        cropped_max_z = min(mask_max_z + 1         , image_array.shape[2])
 
         extended_below = mask_min_z > 0
         extended_above = mask_max_z < img_array.shape[2]
@@ -533,7 +529,7 @@ class Collage:
                                   cropped_min_z:cropped_max_z]
 
         if self.verbose_logging:
-            print(f'Image shape = {img_array.shape}')
+            print(f'Image shape = {image_array.shape}')
             print(f'Mask size = {mask_height}x{mask_width}x{mask_depth}')
             print(f'Image shape (cropped and padded) = {cropped_image.shape}')
 
@@ -589,7 +585,7 @@ class Collage:
             print('Calculating haralick features of angles done.')
 
         # prepare an output full of "NaN's"
-        collage_output = np.empty(img_array.shape + haralick_features.shape[3:5])
+        collage_output = np.empty(image_array.shape + haralick_features.shape[3:5])
         collage_output[:] = np.nan
         print(collage_output.shape)
 

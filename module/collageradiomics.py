@@ -337,7 +337,7 @@ class Collage:
         """
 
         if verbose_logging:
-            print('Collage Module Initialized')
+            print('Collage Module Initialized 1')
 
         # error checking
         if haralick_window_size == -1:

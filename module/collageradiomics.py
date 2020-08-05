@@ -481,6 +481,8 @@ class Collage:
 
         # the haralick is calculated for each slice separately
         height, width, depth = shape
+
+        print(f'dominant_angles_binned shape is {shape} mask shape is {self.mask_array.shape}')
         for z in range(depth):
             for y,x in product(range(height), range(width)):
                 print(f'shape={self.mask_array.shape} x={x}, y={y}, z={z}')

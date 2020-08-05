@@ -483,6 +483,7 @@ class Collage:
         height, width, depth = shape
         for z in range(depth):
             for y,x in product(range(height), range(width)):
+                print(f'shape={self.mask_array.shape} x={x}, y={y}, z={z}')
                 if self.mask_array[y,x,z]:
                     haralick_image[y,x,z,:] = self.calculate_haralick_feature_values(dominant_angles_binned[:,:,z], x, y)
 

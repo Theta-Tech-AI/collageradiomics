@@ -30,6 +30,7 @@ def svd_dominant_angles(dx, dy, dz, svd_radius):
     #window_shape = (svd_diameter, svd_diameter) + ((3 if is_3D else 1),)
     window_shape = (svd_diameter, svd_diameter, 1)
     print(f'Window patch shape for dominant angle calculation = {window_shape}')
+    print(f'dx shape={dx.shape}')
     dx_windows = view_as_windows(dx, window_shape)
     dy_windows = view_as_windows(dy, window_shape)
     dz_windows = view_as_windows(dz, window_shape)

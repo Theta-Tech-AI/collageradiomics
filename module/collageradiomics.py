@@ -483,7 +483,8 @@ class Collage:
         height, width, depth = shape
 
         print(f'dominant_angles_binned shape is {shape} mask shape is {self.mask_array.shape}')
-        for z in range(depth):
+        # We extended the dominant angles by one slice in each direction.
+        for z in range(1, depth - 1):
             for y,x in product(range(height), range(width)):
                 print(f'shape={self.mask_array.shape} x={x}, y={y}, z={z}')
                 if self.mask_array[y,x,z]:
@@ -523,6 +524,9 @@ class Collage:
         cropped_max_y = min(mask_max_y + svd_radius, img_array.shape[0])
         cropped_max_z = min(mask_max_z + 1         , img_array.shape[2])
 
+        extended_below = mask_min_z > 0
+        extended_above = mask_max_z < img_array.shape[2]
+
         cropped_image = img_array[cropped_min_y:cropped_max_y,
                                   cropped_min_x:cropped_max_x,
                                   cropped_min_z:cropped_max_z]
@@ -544,6 +548,17 @@ class Collage:
         dx = np.gradient(cropped_image, axis=1)
         dy = np.gradient(cropped_image, axis=0)
         dz = np.gradient(cropped_image, axis=2) if self.is_3D else np.zeros(dx.shape)
+        
+        if extended_below:
+            dx = dx[:,:,1:]
+            dy = dy[:,:,1:]
+            dz = dz[:,:,1:]
+        
+        if extended_above:
+            dx = dx[:,:,:-1]
+            dy = dy[:,:,:-1]
+            dz = dz[:,:,:-1]
+            
         self.dx = dx
         self.dy = dy
         self.dz = dz

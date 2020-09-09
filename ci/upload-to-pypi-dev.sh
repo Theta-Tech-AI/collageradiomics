@@ -5,13 +5,13 @@ VERSION=`cat VERSION`.dev$GITHUB_RUN_NUMBER
 echo $VERSION > VERSION
 
 # Remove any straggling binaries.
-rm -rf core/dist
-rm -rf types/dist
+rm -rf module/core/dist
+rm -rf module/types/dist
 
 # Put wheels and source to dist directories.
-python core/setup.py sdist bdist_wheel
-python types/setup.py sdist bdist_wheel
+python module/core/setup.py sdist bdist_wheel
+python module/types/setup.py sdist bdist_wheel
 
 # Upload binary and source files to PyPI.
-twine upload core/dist/*
-twine upload types/dist/* 
+twine upload module/core/dist/*
+twine upload module/types/dist/* 

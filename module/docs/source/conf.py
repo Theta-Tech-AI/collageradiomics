@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'collageradiomics'
-copyright = '2020, BrIC Laboratory'
-author = 'BrIC Laboratory'
+copyright = '2020, BriC Laboratory'
+author = 'BriC Laboratory'
 release = '0.2'
 extensions = [
     'sphinx.ext.autodoc',

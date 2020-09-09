@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # Append github action build number to version in VERSION file.
+cd module
 VERSION=`cat VERSION`.dev$GITHUB_RUN_NUMBER
 echo $VERSION > VERSION
 
-# Remove any straggling binaries.
+cd core
 rm -rf dist
+python setup.py sdist bdist_wheel
+twine upload dist/*
 
-# Put wheels and source to dist directories.
-python module/core/setup.py sdist bdist_wheel
-python module/types/setup.py sdist bdist_wheel
-
-# Upload binary and source files to PyPI.
+cd ../types
+rm -rf dist
+python setup.py sdist bdist_wheel
 twine upload dist/*

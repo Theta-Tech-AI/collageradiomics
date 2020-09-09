@@ -7,7 +7,7 @@ with open('VERSION') as version_file:
     version = version_file.read().strip()
 
 setuptools.setup(
-    name='collageradiomics',
+    name='collageradiomics-types',
     version=version,
     author='Toth Technology',
     author_email='toth-tech@hillyer.me',

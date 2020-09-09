@@ -7,7 +7,6 @@ from skimage.feature.texture import greycomatrix
 from skimage.util.shape import view_as_windows
 from enum import Enum, IntEnum
 
-
 def svd_dominant_angles(dx, dy, dz, svd_radius):
     """Calculate a new numpy image containing the dominant angles for each voxel.
 
@@ -118,40 +117,6 @@ def scale_array_for_image(array_to_scale):
     array_to_scale /= array_range
     array_to_scale *= 255
     return array_to_scale
-
-
-class HaralickFeature(IntEnum):
-    """Enumeration Helper For Haralick Features
-
-        :param IntEnum: Enumeration Helper For Haralick Features
-        :type IntEnum: HaralickFeature
-    """
-    AngularSecondMoment = 0
-    Contrast = 1
-    Correlation = 2
-    SumOfSquareVariance = 3
-    SumAverage = 4
-    SumVariance = 5
-    SumEntropy = 6
-    Entropy = 7
-    DifferenceVariance = 8
-    DifferenceEntropy = 9
-    InformationMeasureOfCorrelation1 = 10
-    InformationMeasureOfCorrelation2 = 11
-    MaximalCorrelationCoefficient = 12
-
-
-class DifferenceVarianceInterpretation(Enum):
-    """ Feature 10 has two interpretations, as the variance of |x-y|
-        or as the variance of P(|x-y|).
-        See: https://ieeexplore.ieee.org/document/4309314
-
-        :param Enum: Enumeration Helper For Haralick Features
-        :type Enum: DifferenceVarianceInterpretation
-    """
-    XMinusYVariance = 0
-    ProbabilityXMinusYVariance = 1
-
 
 class Collage:
     """This is the main object in the Collage calculation system. Usage: create a Collage object and then call the :py:meth:`execute` function.

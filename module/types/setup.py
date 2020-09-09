@@ -7,7 +7,7 @@ with open('VERSION') as version_file:
     version = version_file.read().strip()
 
 setuptools.setup(
-    name='collageradiomics-types',
+    name='collageradiomicstypes',
     version=version,
     author='Toth Technology',
     author_email='toth-tech@hillyer.me',
@@ -20,7 +20,7 @@ setuptools.setup(
         'Docker Module': 'https://hub.docker.com/repository/docker/ccipd/collageradiomics-pip',
         'GitHub': 'https://github.com/radxtools/collageradiomics'
     },
-    py_modules=['collageradiomics-types'],
+    py_modules=['collageradiomicstypes'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

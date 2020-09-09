@@ -20,7 +20,7 @@ setuptools.setup(
         'Docker Module': 'https://hub.docker.com/repository/docker/ccipd/collageradiomics-pip',
         'GitHub': 'https://github.com/radxtools/collageradiomics'
     },
-    py_modules=['collageradiomics'],
+    py_modules=['collageradiomics-types'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

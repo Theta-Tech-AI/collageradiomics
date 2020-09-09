@@ -22,5 +22,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        cd module
-        sh upload-to-pypi-dev.sh
+        sh module/upload-to-pypi-dev.sh
